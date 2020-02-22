@@ -30,6 +30,7 @@ struct ContentView: View {
     @State private var showingScore = false
     @State private var myScore = 0
     @State private var tappedIndex = 0
+    @State private var spinAnimation = 0.0
     
     var body: some View {
         ZStack {
@@ -51,8 +52,8 @@ struct ContentView: View {
                     }) {
                         Image(self.countries[number]).renderingMode(.original)
                         .setFlagView()
+                        .rotation3DEffect(.degrees(self.spinAnimation), axis: (x: 0, y: 1, z: 0))
                     }
-                    
                 }
                 HStack {
                     Text("Your Score:")
@@ -75,15 +76,15 @@ struct ContentView: View {
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct"
-            myScore += 10
+            myScore += 1
             tappedIndex = correctAnswer
+            withAnimation(.easeInOut(duration: 2)){
+                self.spinAnimation += 360
+            }
         } else {
             tappedIndex = number
             scoreTitle = "Wrong"
-            myScore -= 10
-            if myScore < 0 {
-                myScore = 0
-            }
+            myScore -= 1
         }
         showingScore = true
     }
@@ -91,6 +92,7 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        showingScore = false
     }
 }
 
